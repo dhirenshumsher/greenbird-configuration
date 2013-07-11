@@ -22,7 +22,6 @@ Example dependency config:
     <groupId>com.greenbird</groupId>
     <artifactId>greenbird-configuration</artifactId>
     <version>1.0.0</version>
-    <scope>test</scope>
 </dependency>
 ```
 
