@@ -42,8 +42,9 @@ Include the jar as a test scope dependency for your project and you are ready to
 TODO
 
 ## History
-- 1.0.0-SNAPSHOT: Initial release.
+- [1.0.0-SNAPSHOT]: Initial release.
 
+[1.0.0-SNAPSHOT]:      https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
 [build-link]:          https://build.greenbird.com/job/greenbird-configuration/
