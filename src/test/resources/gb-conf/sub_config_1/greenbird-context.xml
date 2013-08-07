@@ -5,4 +5,8 @@
         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean name="contextTestBean1" class="com.greenbird.configuration.ContextTestBean1"/>
+
+    <bean name="pojoTestBean" class="com.greenbird.configuration.ConfigPojoTestBean">
+        <constructor-arg value="${pojo.test.property}"/>        
+    </bean>
 </beans>

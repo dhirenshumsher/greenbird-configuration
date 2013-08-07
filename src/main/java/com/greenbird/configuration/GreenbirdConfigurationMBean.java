@@ -13,9 +13,7 @@ import java.util.Properties;
 @Service
 @ManagedResource("greenbird.configuration:name=greenbirdConfiguration,type=GreenbirdConfiguration")
 public class GreenbirdConfigurationMBean {
-    @Autowired
-    private GreenbirdConstrettoPropertyPlaceholderConfigurer propertyConfigurer;
-    @Autowired
+    private GreenbirdPropertyPlaceholderConfigurer propertyConfigurer;
     private GreenbirdResourceFinder resourceFinder;
 
     @ManagedAttribute
@@ -28,10 +26,12 @@ public class GreenbirdConfigurationMBean {
         return Arrays.asList(resourceFinder.findGreenbirdModules());
     }
 
-    public void setPropertyConfigurer(GreenbirdConstrettoPropertyPlaceholderConfigurer propertyConfigurer) {
+    @Autowired
+    public void setPropertyConfigurer(GreenbirdPropertyPlaceholderConfigurer propertyConfigurer) {
         this.propertyConfigurer = propertyConfigurer;
     }
 
+    @Autowired
     public void setResourceFinder(GreenbirdResourceFinder resourceFinder) {
         this.resourceFinder = resourceFinder;
     }

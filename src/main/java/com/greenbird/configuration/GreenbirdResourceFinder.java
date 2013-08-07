@@ -10,8 +10,8 @@ import java.io.IOException;
 
 @Service
 public class GreenbirdResourceFinder {
-    public static final String GREENBIRD_CONFIG_ROOT_PATH = "classpath*:/greenbird/**/";
-    public static final String GREENBIRD_MODULE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "greenbird-module.xml";
+    public static final String GREENBIRD_CONFIG_ROOT_PATH = "classpath*:/gb-conf/**/";
+    public static final String GREENBIRD_MODULE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "*-context.xml";
     private static final String GREENBIRD_CONFIGURATION_FILE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "greenbird.properties";
     private static final String GREENBIRD_DEFAULT_CONFIGURATION_FILE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "greenbird-default.properties";
 

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class GreenbirdConfigurationMBeanTest {
     @Mock
-    private GreenbirdConstrettoPropertyPlaceholderConfigurer mockPropertyConfigurer;
+    private GreenbirdPropertyPlaceholderConfigurer mockPropertyConfigurer;
     @Mock
     private GreenbirdResourceFinder mockResourceFinder;
 

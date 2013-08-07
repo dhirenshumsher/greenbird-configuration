@@ -7,5 +7,5 @@
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <ctx:component-scan base-package="com.greenbird"/>
+    <ctx:component-scan base-package="com.greenbird.configuration"/>
 </beans>

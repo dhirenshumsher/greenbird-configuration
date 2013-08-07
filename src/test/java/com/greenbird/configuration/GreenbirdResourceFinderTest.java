@@ -18,7 +18,7 @@ public class GreenbirdResourceFinderTest {
         Iterable<Resource> relevantResources = filter(greenbirdModules, new Predicate<Resource>() {
             @Override
             public boolean apply(Resource resource) {
-                return resourceContains(resource, "greenbird/sub_config_2");
+                return resourceContains(resource, "gb-conf/sub_config_2");
             }
         });
         assertThat(relevantResources.iterator().hasNext(), is(true));
@@ -28,14 +28,14 @@ public class GreenbirdResourceFinderTest {
     public void findGreenbirdModuleConfigurationFiles_normal_relevantResourcesFound() {
         Resource[] greenbirdModules = new GreenbirdResourceFinder().findGreenbirdModuleConfigurationFiles();
         assertThat(greenbirdModules.length, is(1));
-        assertThat(resourceContains(greenbirdModules[0], "greenbird/greenbird.properties"), is(true));
+        assertThat(resourceContains(greenbirdModules[0], "gb-conf/greenbird.properties"), is(true));
     }
 
     @Test
     public void findGreenbirdModuleDefaultConfigurationFiles_normal_relevantResourcesFound() {
         Resource[] greenbirdModules = new GreenbirdResourceFinder().findGreenbirdModuleDefaultConfigurationFiles();
         assertThat(greenbirdModules.length, is(1));
-        assertThat(resourceContains(greenbirdModules[0], "greenbird/greenbird-default.properties"), is(true));
+        assertThat(resourceContains(greenbirdModules[0], "gb-conf/greenbird-default.properties"), is(true));
     }
 
     private boolean resourceContains(Resource input, String pathFragment) {

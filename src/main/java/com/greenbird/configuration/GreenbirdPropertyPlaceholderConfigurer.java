@@ -5,7 +5,10 @@ import org.constretto.ConstrettoConfiguration;
 import org.constretto.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -18,17 +21,13 @@ import static com.greenbird.configuration.PropertyReporter.buildPropertyReport;
 
 
 @Component
-public class GreenbirdConstrettoPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
+public class GreenbirdPropertyPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer {
     public static final String GREENBIRD_CONFIG_UUID_KEY = "GREENBIRD_CONFIG_UUID";
     private static final Pattern GREENBIRD_CONFIG_UUID_PATTERN = Pattern.compile(GREENBIRD_CONFIG_UUID_KEY);
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private GreenbirdResourceFinder resourceFinder = new GreenbirdResourceFinder();
     private ConstrettoConfiguration configuration;
-
-    public GreenbirdConstrettoPropertyPlaceholderConfigurer() {
-        loadProperties();
-    }
 
     public Properties getProperties() {
         Properties properties = new Properties();
@@ -39,17 +38,24 @@ public class GreenbirdConstrettoPropertyPlaceholderConfigurer extends PropertyPl
     }
 
     @Override
-    protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
-        String value = configuration.evaluateTo(String.class, placeholder);
-        if (value.contains(GREENBIRD_CONFIG_UUID_KEY)) {
-            value = buildRandomPropertyValue(value);
-        }
-        return value;
+    public void setEnvironment(Environment environment) {
+        loadProperties(environment);
+        ((ConfigurableEnvironment) environment).getPropertySources().addLast(new PropertySource<Object>("gbConfSource") {
+            @Override
+            public Object getProperty(String name) {
+                String value = configuration.evaluateTo(String.class, name);
+                if (value.contains(GREENBIRD_CONFIG_UUID_KEY)) {
+                    value = buildRandomPropertyValue(value);
+                }
+                return value;
+            }
+        });
+        super.setEnvironment(environment);
     }
 
-    private void loadProperties() {
+    private void loadProperties(Environment environment) {
         ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder =
-                new ConstrettoBuilder(new GreenbirdConfigurationContextResolver()).createPropertiesStore();
+                new ConstrettoBuilder(new GreenbirdConfigurationContextResolver(environment)).createPropertiesStore();
         // load default properties first so they can be overridden
         addPropertyResources(propertiesBuilder, resourceFinder.findGreenbirdModuleDefaultConfigurationFiles());
         addPropertyResources(propertiesBuilder, resourceFinder.findGreenbirdModuleConfigurationFiles());
