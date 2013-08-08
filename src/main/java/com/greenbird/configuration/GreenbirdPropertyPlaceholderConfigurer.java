@@ -56,9 +56,16 @@ public class GreenbirdPropertyPlaceholderConfigurer extends PropertySourcesPlace
     private void loadProperties(Environment environment) {
         ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder =
                 new ConstrettoBuilder(new GreenbirdConfigurationContextResolver(environment)).createPropertiesStore();
+
         // load default properties first so they can be overridden
-        addPropertyResources(propertiesBuilder, resourceFinder.findGreenbirdModuleDefaultConfigurationFiles());
-        addPropertyResources(propertiesBuilder, resourceFinder.findGreenbirdModuleConfigurationFiles());
+        for (String defaultProfile : environment.getDefaultProfiles()) {
+            addPropertyResources(propertiesBuilder, resourceFinder.findConfigurationFilesForProfile(defaultProfile));
+        }
+
+        for (String activeProfile : environment.getActiveProfiles()) {
+            addPropertyResources(propertiesBuilder, resourceFinder.findConfigurationFilesForProfile(activeProfile));
+        }
+
         configuration = propertiesBuilder.done().getConfiguration();
         logger.info(buildPropertyReport(configuration));
     }

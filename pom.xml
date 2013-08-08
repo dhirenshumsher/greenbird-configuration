@@ -188,7 +188,7 @@
                             -->
                             <regex>
                                 <pattern>.*\.GreenbirdResourceFinder</pattern>
-                                <lineRate>80</lineRate>
+                                <lineRate>75</lineRate>
                             </regex>
                         </regexes>
                     </check>

@@ -23,15 +23,15 @@ public class GreenbirdConfigurationMBeanJMXTest extends ContextLoadingTestBase {
     }
 
     @Test
-    public void getGreenbirdProperties_normal_propertiesReturned() throws Exception {
-        Properties properties = (Properties) mBeanServer.getAttribute(objectName, "GreenbirdProperties");
+    public void getProperties_normal_propertiesReturned() throws Exception {
+        Properties properties = (Properties) mBeanServer.getAttribute(objectName, "Properties");
         assertThat(properties.size(), greaterThan(0));
     }
 
     @Test
-    public void getLoadedGreenbirdModules_normal_modulesReturned() throws Exception {
+    public void getLoadedContexts_normal_modulesReturned() throws Exception {
         @SuppressWarnings("unchecked")
-        List<Resource> loadedGreenbirdModules = (List<Resource>) mBeanServer.getAttribute(objectName, "LoadedGreenbirdModules");
-        assertThat(loadedGreenbirdModules.size(), greaterThan(0));
+        List<Resource> loadedContexts = (List<Resource>) mBeanServer.getAttribute(objectName, "LoadedContexts");
+        assertThat(loadedContexts.size(), greaterThan(0));
     }
 }

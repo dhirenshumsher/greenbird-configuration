@@ -8,26 +8,23 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+import static java.lang.String.format;
+
 @Service
 public class GreenbirdResourceFinder {
-    public static final String GREENBIRD_CONFIG_ROOT_PATH = "classpath*:/gb-conf/**/";
-    public static final String GREENBIRD_MODULE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "*-context.xml";
-    private static final String GREENBIRD_CONFIGURATION_FILE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "greenbird.properties";
-    private static final String GREENBIRD_DEFAULT_CONFIGURATION_FILE_PATTERN = GREENBIRD_CONFIG_ROOT_PATH + "greenbird-default.properties";
+    public static final String CONFIG_ROOT_PATH = "classpath*:/gb-conf/**/";
+    public static final String CONTEXT_PATTERN = CONFIG_ROOT_PATH + "*-context.xml";
+    private static final String CONFIGURATION_FILE_PATTERN = CONFIG_ROOT_PATH + "*-%s.properties";
 
     private final ResourcePatternResolver resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(
             new DefaultResourceLoader(Thread.currentThread().getContextClassLoader()));
 
-    public Resource[] findGreenbirdModules() {
-        return findResources(GREENBIRD_MODULE_PATTERN);
+    public Resource[] findContextDefinitions() {
+        return findResources(CONTEXT_PATTERN);
     }
 
-    public Resource[] findGreenbirdModuleConfigurationFiles() {
-        return findResources(GREENBIRD_CONFIGURATION_FILE_PATTERN);
-    }
-
-    public Resource[] findGreenbirdModuleDefaultConfigurationFiles() {
-        return findResources(GREENBIRD_DEFAULT_CONFIGURATION_FILE_PATTERN);
+    public Resource[] findConfigurationFilesForProfile(String profileName) {
+        return findResources(format(CONFIGURATION_FILE_PATTERN, profileName));
     }
 
     private Resource[] findResources(String locationPattern) {

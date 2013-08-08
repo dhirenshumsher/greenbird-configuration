@@ -13,8 +13,8 @@ import static org.junit.Assert.assertThat;
 
 public class GreenbirdResourceFinderTest {
     @Test
-    public void findGreenbirdModules_normal_relevantModulesFound() throws Exception {
-        List<Resource> greenbirdModules = asList(new GreenbirdResourceFinder().findGreenbirdModules());
+    public void findContextDefinitions_normal_relevantModulesFound() throws Exception {
+        List<Resource> greenbirdModules = asList(new GreenbirdResourceFinder().findContextDefinitions());
         Iterable<Resource> relevantResources = filter(greenbirdModules, new Predicate<Resource>() {
             @Override
             public boolean apply(Resource resource) {
@@ -25,17 +25,10 @@ public class GreenbirdResourceFinderTest {
     }
 
     @Test
-    public void findGreenbirdModuleConfigurationFiles_normal_relevantResourcesFound() {
-        Resource[] greenbirdModules = new GreenbirdResourceFinder().findGreenbirdModuleConfigurationFiles();
+    public void findConfigurationFilesForProfile_normal_relevantResourcesFound() {
+        Resource[] greenbirdModules = new GreenbirdResourceFinder().findConfigurationFilesForProfile("testprofile");
         assertThat(greenbirdModules.length, is(1));
-        assertThat(resourceContains(greenbirdModules[0], "gb-conf/greenbird.properties"), is(true));
-    }
-
-    @Test
-    public void findGreenbirdModuleDefaultConfigurationFiles_normal_relevantResourcesFound() {
-        Resource[] greenbirdModules = new GreenbirdResourceFinder().findGreenbirdModuleDefaultConfigurationFiles();
-        assertThat(greenbirdModules.length, is(1));
-        assertThat(resourceContains(greenbirdModules[0], "gb-conf/greenbird-default.properties"), is(true));
+        assertThat(resourceContains(greenbirdModules[0], "gb-conf/greenbird-testprofile.properties"), is(true));
     }
 
     private boolean resourceContains(Resource input, String pathFragment) {

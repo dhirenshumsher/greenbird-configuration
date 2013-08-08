@@ -16,7 +16,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 @Configuration
-@ImportResource(GreenbirdResourceFinder.GREENBIRD_MODULE_PATTERN)
+@ImportResource(GreenbirdResourceFinder.CONTEXT_PATTERN)
 public class GreenbirdSpringContextLoader implements ApplicationContextAware {
     private static final String LS = System.getProperty("line.separator");
 
@@ -25,7 +25,7 @@ public class GreenbirdSpringContextLoader implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        List<Resource> moduleResource = asList(resourceFinder.findGreenbirdModules());
+        List<Resource> moduleResource = asList(resourceFinder.findContextDefinitions());
         String result = join(moduleResource, LS);
         logger.info(format("Loaded Greenbird modules:%s%s%s", LS, result, LS));
 

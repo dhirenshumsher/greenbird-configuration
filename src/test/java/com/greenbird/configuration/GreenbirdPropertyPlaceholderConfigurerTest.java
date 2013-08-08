@@ -56,12 +56,13 @@ public class GreenbirdPropertyPlaceholderConfigurerTest extends ContextLoadingTe
 
     @Test
     public void configure_springProfilesActive_profilesAreConsidered() {
-        System.setProperty("spring.profiles.active", "prod,other");
+        System.setProperty("spring.profiles.active", "prod,other,testprofile");
         GenericXmlApplicationContext context = createContextManually();
         ConfigTestBean bean = context.getBean("configTestBean", ConfigTestBean.class);
         assertThat(bean.getValue(), is("valueProd"));
         assertThat(bean.getValue2(), is("value2Other"));
         assertThat(bean.getEnvironmentValue(), is("envValueProd"));
+        assertThat(bean.getDefaultValue(), is("testProfileValue"));
         System.setProperty("spring.profiles.active", "");
     }
 

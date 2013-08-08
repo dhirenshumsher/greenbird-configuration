@@ -35,13 +35,13 @@ public class GreenbirdConfigurationMBeanTest {
     public void getProperties_normal_propertiesReturned() {
         Properties properties = new Properties();
         when(mockPropertyConfigurer.getProperties()).thenReturn(properties);
-        assertThat(configurationMBean.getGreenbirdProperties(), is(properties));
+        assertThat(configurationMBean.getProperties(), is(properties));
     }
 
     @Test
-    public void getLoadedGreenbirdModules_normal_modulesReturned() throws MalformedURLException {
+    public void getLoadedContexts_normal_modulesReturned() throws MalformedURLException {
         Resource[] resources = new Resource[]{new UrlResource("http://test")};
-        when(mockResourceFinder.findGreenbirdModules()).thenReturn(resources);
-        assertThat(configurationMBean.getLoadedGreenbirdModules(), is(asList(resources)));
+        when(mockResourceFinder.findContextDefinitions()).thenReturn(resources);
+        assertThat(configurationMBean.getLoadedContexts(), is(asList(resources)));
     }
 }

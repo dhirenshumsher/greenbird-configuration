@@ -17,13 +17,13 @@ public class GreenbirdConfigurationMBean {
     private GreenbirdResourceFinder resourceFinder;
 
     @ManagedAttribute
-    public Properties getGreenbirdProperties() {
+    public Properties getProperties() {
         return propertyConfigurer.getProperties();
     }
 
     @ManagedAttribute
-    public List<Resource> getLoadedGreenbirdModules() {
-        return Arrays.asList(resourceFinder.findGreenbirdModules());
+    public List<Resource> getLoadedContexts() {
+        return Arrays.asList(resourceFinder.findContextDefinitions());
     }
 
     @Autowired
