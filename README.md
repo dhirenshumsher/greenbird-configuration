@@ -4,12 +4,13 @@ Library that simplifies configuration and context loading for Spring based proje
 Projects using this library will benefit from:
 - Automatic loading of Spring context definitions.
 - Automatic loading of configuration properties.
-- Visibility of loaded components and configuration properties through logging and JMX.
 - Environments separated using regular Spring profiles.  
 - Automatic overloading of configuration properties for the active profile(s).
 - Profile-specific properties can either be defined in separate files or side-by-side in a single file.
 - Configuration values can be referenced in other properties through property expansion.
 - Cross pollination of Spring property placeholder values and `Environment` properties.  
+- Visibility of loaded components and configuration properties through logging and JMX.
+- Automatic loading of configuration and Spring definitions for all dependencies that are using greenbird-configuration.
 
 Part of the [greenbird] Open Source Java [projects].
 
@@ -48,7 +49,7 @@ Include the jar as a runtime scope dependency and configure Spring as described 
 ## Usage
 
 ### Quick start
-The main functionality of greenbird-configuration is to automatically load and manage configuration properties and Spring context definitions for your application.
+The main functionality of greenbird-configuration is to automatically load and manage configuration properties and Spring context definitions for your application and your applications dependencies.
 
 1.  Place the relevant files under the `/gb-config` package in your classpath:  
     Files with the `*-<profile>.properties` name pattern (e.g. `myapp-default.properties`) will be loaded as configuration properties.    
@@ -86,7 +87,7 @@ src/main/resources/gb-conf/spring/myothermodule-context.xml
 
 #### Spring context definition files
 These are regular Spring configuration files. The only special requirement we have for them is that they are named using the `*-context.xml` naming pattern.
-In addition to vanilla Spring files you can also add other context files that are based on Spring, E.g. Mule ESB flow definitions.
+In addition to vanilla Spring files you can also add other definition files that are based on Spring, E.g. Mule ESB flow definitions.
 
 #### Configuration property files
 
@@ -139,7 +140,81 @@ This is by design. It enables you to define default values for all properties in
 
 In the format section we described how you can overload properties in a single property file using a special profile tag syntax. 
 We recommend that you either use the profile tag approach or the file name approach. Using both at the same time would be confusing.
-Projects with a large amount of overrides would probably benefit from using separate files while other projects might benefit from keeping the property variants close together in a single file. 
+Projects with a large amount of overrides would probably benefit from using separate files while other projects might benefit from keeping the property variants close together in a single file.
+ 
+#### Visibility
+With all this automatic loading of data it is important to be able to verify what has been loaded and from where. greenbird-configuration makes this information available in two ways.
+
+##### Log report
+On startup we log a configuration report on the INFO level via [SLF4J] on the `com.greenbird.configuration.ConfigurationReporter` log category.
+
+If you activate INFO logging for this category you will be able to see output like this example from one of our unit tests:
+
+```
+***********************************************************************
+GREENBIRD CONFIGURATION REPORT
+***********************************************************************
+
+SPRING PROFILES
+---------------
+Active profiles:  prod, other, testprofile
+Default profiles: default
+
+AUTO-LOADED CONFIGURATION FILES
+-------------------------------
+file [/dev/configuration/target/test-classes/gb-conf/greenbird-default.properties]
+file [/dev/configuration/target/test-classes/gb-conf/greenbird-testprofile.properties]
+
+CONFIGURATION PROPERTIES
+------------------------------------
+default.test.property     = testProfileValue
+environment.test.property = envValueProd
+pojo.test.property        = pojoValue
+test.newPassword          = *****
+test.property             = valueProd
+test.property.2           = value2Other
+test.pw.old               = *****
+test.reference            = valueProd-reference
+test.uuid                 = random.GREENBIRD_CONFIG_UUID.test.GREENBIRD_CONFIG_UUID
+
+AUTO-LOADED SPRING DEFINITION FILES
+-----------------------------------
+file [/dev/configuration/target/test-classes/gb-conf/sub_config_1/greenbird-context.xml]
+file [/dev/configuration/target/test-classes/gb-conf/sub_config_2/greenbird-context.xml]
+file [/dev/configuration/target/classes/gb-conf/greenbird-configuration-context.xml]
+
+BEANS IN CONTEXT
+----------------
+com.greenbird.configuration:
+  ConfigPojoTestBean (pojoTestBean)
+  ConfigTestBean (configTestBean)
+  ConfigurationMBean (configurationMBean)
+  ConfigurationPropertyPlaceholderConfigurer (configurationPropertyPlaceholderConfigurer)
+  ConfigurationReporter (configurationReporter)
+  ContextTestBean1 (contextTestBean1)
+  ContextTestBean2 (contextTestBean2)
+  ResourceFinder (resourceFinder)
+  SpringContextLoader$$EnhancerByCGLIB$$3d82d5dd (springContextLoader)
+
+com.greenbird.configuration.sub:
+  BeanToBeReported (beanToBeReported1, beanToBeReported2)
+  OtherBeanToBeReported (otherBeanToBeReported)
+
+***********************************************************************
+```
+
+##### JMX
+The configuration report data is also made available via [JMX] and can be accessed via a standalone JMX client or the administration console of most Java application servers.
+
+Object name: `greenbird.configuration:name=greenbirdConfiguration,type=GreenbirdConfiguration`
+
+Attributes:
+- ActiveSpringProfiles (String)
+- DefaultSpringProfiles (String)
+- LoadedConfigurationFiles (List\<String>)
+- PropertiesReport (String)
+- LoadedSpringDefinitionFiles (List\<String>)
+- BeansInContext (List\<String>)
 
 ## History
 - [1.0.0-SNAPSHOT]: Initial release.
@@ -153,7 +228,9 @@ Projects with a large amount of overrides would probably benefit from using sepa
 [download]:            http://search.maven.org/#search|ga|1|greenbird-configuration
 [greenbird]:           http://greenbird.com/
 [issue-tracker]:       https://github.com/greenbird/greenbird-configuration/issues
+[JMX]:                 http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html
 [Maven]:               http://maven.apache.org/
 [projects]:            http://greenbird.github.io/
 [snapshot repository]: https://oss.sonatype.org/content/repositories/snapshots/com/greenbird/greenbird-configuration
+[SLF4J]:               www.slf4j.org
 [Spring profile]:      http://blog.springsource.com/2011/02/11/spring-framework-3-1-m1-released/

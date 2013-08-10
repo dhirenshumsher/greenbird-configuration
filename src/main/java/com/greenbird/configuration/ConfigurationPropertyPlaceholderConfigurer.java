@@ -2,9 +2,7 @@ package com.greenbird.configuration;
 
 import org.constretto.ConstrettoBuilder;
 import org.constretto.ConstrettoConfiguration;
-import org.constretto.Property;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.constretto.exception.ConstrettoExpressionException;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -12,7 +10,8 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,21 +20,13 @@ import static com.greenbird.configuration.PropertyReporter.buildPropertyReport;
 
 
 @Component
-public class GreenbirdPropertyPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer {
+public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer {
     public static final String GREENBIRD_CONFIG_UUID_KEY = "GREENBIRD_CONFIG_UUID";
     private static final Pattern GREENBIRD_CONFIG_UUID_PATTERN = Pattern.compile(GREENBIRD_CONFIG_UUID_KEY);
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private GreenbirdResourceFinder resourceFinder = new GreenbirdResourceFinder();
+    private ResourceFinder resourceFinder = new ResourceFinder();
     private ConstrettoConfiguration configuration;
-
-    public Properties getProperties() {
-        Properties properties = new Properties();
-        for (Property property : configuration) {
-            properties.setProperty(property.getKey(), property.getValue());
-        }
-        return properties;
-    }
+    private List<Resource> loadedPropertyFiles = new ArrayList<Resource>();
 
     @Override
     public void setEnvironment(Environment environment) {
@@ -43,8 +34,13 @@ public class GreenbirdPropertyPlaceholderConfigurer extends PropertySourcesPlace
         ((ConfigurableEnvironment) environment).getPropertySources().addLast(new PropertySource<Object>("gbConfSource") {
             @Override
             public Object getProperty(String name) {
-                String value = configuration.evaluateTo(String.class, name);
-                if (value.contains(GREENBIRD_CONFIG_UUID_KEY)) {
+                String value = null;
+                try {
+                    value = configuration.evaluateTo(String.class, name);
+                } catch (ConstrettoExpressionException e) {
+                    // NOP - value not found is OK
+                }
+                if (value != null && value.contains(GREENBIRD_CONFIG_UUID_KEY)) {
                     value = buildRandomPropertyValue(value);
                 }
                 return value;
@@ -58,21 +54,19 @@ public class GreenbirdPropertyPlaceholderConfigurer extends PropertySourcesPlace
                 new ConstrettoBuilder(new GreenbirdConfigurationContextResolver(environment)).createPropertiesStore();
 
         // load default properties first so they can be overridden
-        for (String defaultProfile : environment.getDefaultProfiles()) {
-            addPropertyResources(propertiesBuilder, resourceFinder.findConfigurationFilesForProfile(defaultProfile));
-        }
-
-        for (String activeProfile : environment.getActiveProfiles()) {
-            addPropertyResources(propertiesBuilder, resourceFinder.findConfigurationFilesForProfile(activeProfile));
-        }
+        addPropertyResources(propertiesBuilder, environment.getDefaultProfiles());
+        addPropertyResources(propertiesBuilder, environment.getActiveProfiles());
 
         configuration = propertiesBuilder.done().getConfiguration();
-        logger.info(buildPropertyReport(configuration));
     }
 
-    private void addPropertyResources(ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder, Resource[] resources) {
-        for (Resource propertyResource : resources) {
-            propertiesBuilder.addResource(propertyResource);
+    private void addPropertyResources(ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder, String... profiles) {
+        for (String profile : profiles) {
+            Resource[] resources = resourceFinder.findConfigurationFilesForProfile(profile);
+            for (Resource propertyResource : resources) {
+                loadedPropertyFiles.add(propertyResource);
+                propertiesBuilder.addResource(propertyResource);
+            }
         }
     }
 
@@ -86,4 +80,11 @@ public class GreenbirdPropertyPlaceholderConfigurer extends PropertySourcesPlace
         return result.toString();
     }
 
+    public String createPropertyReport() {
+        return buildPropertyReport(configuration);
+    }
+
+    public List<Resource> getLoadedPropertyFiles() {
+        return loadedPropertyFiles;
+    }
 }

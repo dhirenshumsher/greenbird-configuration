@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class PropertyReporter {
+class PropertyReporter {
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(".*(\\.pw|password|passwd|pwd).*", Pattern.CASE_INSENSITIVE);
     private static final String LS = System.getProperty("line.separator");
     private static final PropertyReporter INSTANCE = new PropertyReporter();
@@ -17,14 +17,14 @@ public class PropertyReporter {
         //NOP
     }
 
-    public static String buildPropertyReport(ConstrettoConfiguration configuration) {
+    static String buildPropertyReport(ConstrettoConfiguration configuration) {
         return INSTANCE.doBuildPropertyReport(configuration);
     }
 
     private String doBuildPropertyReport(ConstrettoConfiguration configuration) {
         int maxNameLength = getMaxPropertyLength(configuration);
         List<Property> properties = sortProperties(configuration);
-        StringBuilder reportBuilder = new StringBuilder("using properties :").append(LS);
+        StringBuilder reportBuilder = new StringBuilder();
         for (Property property : properties) {
             reportBuilder
                     .append(String.format("%-" + maxNameLength + "s = %s", property.getKey(), formatValue(property)))

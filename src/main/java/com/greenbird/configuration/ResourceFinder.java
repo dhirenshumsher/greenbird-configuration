@@ -11,7 +11,7 @@ import java.io.IOException;
 import static java.lang.String.format;
 
 @Service
-public class GreenbirdResourceFinder {
+public class ResourceFinder {
     public static final String CONFIG_ROOT_PATH = "classpath*:/gb-conf/**/";
     public static final String CONTEXT_PATTERN = CONFIG_ROOT_PATH + "*-context.xml";
     private static final String CONFIGURATION_FILE_PATTERN = CONFIG_ROOT_PATH + "*-%s.properties";
@@ -32,7 +32,7 @@ public class GreenbirdResourceFinder {
         try {
             resources = resourcePatternResolver.getResources(locationPattern);
         } catch (IOException e) {
-            throw new GreenbirdConfigurationException("Failed to search for Greenbird resources.", e);
+            throw new ConfigurationException("Failed to search for Greenbird resources.", e);
         }
         return resources;
     }

@@ -9,7 +9,6 @@ import java.util.List;
 public class GreenbirdConfigurationContextResolver implements ConfigurationContextResolver {
     private Environment environment;
 
-
     public GreenbirdConfigurationContextResolver(Environment environment) {
         this.environment = environment;
     }

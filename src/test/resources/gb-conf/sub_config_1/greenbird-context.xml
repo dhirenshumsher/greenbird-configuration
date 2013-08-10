@@ -7,6 +7,9 @@
     <bean name="contextTestBean1" class="com.greenbird.configuration.ContextTestBean1"/>
 
     <bean name="pojoTestBean" class="com.greenbird.configuration.ConfigPojoTestBean">
-        <constructor-arg value="${pojo.test.property}"/>        
+        <constructor-arg value="${pojo.test.property}"/>
     </bean>
+
+    <bean name="beanToBeReported1" class="com.greenbird.configuration.sub.BeanToBeReported"/>
+    <bean name="beanToBeReported2" class="com.greenbird.configuration.sub.BeanToBeReported"/>
 </beans>

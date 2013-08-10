@@ -1,23 +1,20 @@
 package com.greenbird.configuration;
 
-import com.greenbird.test.logging.TestLogAppender;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.core.io.Resource;
 
-import java.util.Properties;
+import java.util.List;
 
-import static com.greenbird.configuration.GreenbirdPropertyPlaceholderConfigurer.GREENBIRD_CONFIG_UUID_KEY;
+import static com.greenbird.configuration.ConfigurationPropertyPlaceholderConfigurer.GREENBIRD_CONFIG_UUID_KEY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
-public class GreenbirdPropertyPlaceholderConfigurerTest extends ContextLoadingTestBase {
+public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadingTestBase {
     @Autowired
     private ConfigTestBean testBean;
 
@@ -25,19 +22,7 @@ public class GreenbirdPropertyPlaceholderConfigurerTest extends ContextLoadingTe
     private ConfigPojoTestBean pojoTestBean;
 
     @Autowired
-    private GreenbirdPropertyPlaceholderConfigurer propertyConfigurer;
-
-    private TestLogAppender testAppender;
-
-    @Before
-    public void setUp() {
-        testAppender = new TestLogAppender(GreenbirdPropertyPlaceholderConfigurer.class);
-    }
-
-    @After
-    public void tearDown() {
-        testAppender.close();
-    }
+    private ConfigurationPropertyPlaceholderConfigurer propertyConfigurer;
 
     @Test
     public void configure_valueAnnotationUsed_propertyIsSet() {
@@ -56,14 +41,12 @@ public class GreenbirdPropertyPlaceholderConfigurerTest extends ContextLoadingTe
 
     @Test
     public void configure_springProfilesActive_profilesAreConsidered() {
-        System.setProperty("spring.profiles.active", "prod,other,testprofile");
-        GenericXmlApplicationContext context = createContextManually();
+        GenericXmlApplicationContext context = createContextManually("prod", "other", "testprofile");
         ConfigTestBean bean = context.getBean("configTestBean", ConfigTestBean.class);
         assertThat(bean.getValue(), is("valueProd"));
         assertThat(bean.getValue2(), is("value2Other"));
         assertThat(bean.getEnvironmentValue(), is("envValueProd"));
         assertThat(bean.getDefaultValue(), is("testProfileValue"));
-        System.setProperty("spring.profiles.active", "");
     }
 
     @Test
@@ -72,10 +55,8 @@ public class GreenbirdPropertyPlaceholderConfigurerTest extends ContextLoadingTe
     }
 
     @Test
-    public void configure_loggerConfiguredToLog_propertiesAreReported() {
-        createContextManually();
-        LoggingEvent propertyReportEvent = testAppender.getLoggingEvents().get(testAppender.getLoggingEvents().size() - 1);
-        String message = propertyReportEvent.getMessage().toString();
+    public void createPropertyReport_normal_propertiesReportedAsExpected() {
+        String message = propertyConfigurer.createPropertyReport();
         assertThat(message, containsString("default.test.property"));
         assertThat(message, containsString("test.property.2"));
     }
@@ -91,17 +72,13 @@ public class GreenbirdPropertyPlaceholderConfigurerTest extends ContextLoadingTe
     }
 
     @Test
-    public void getProperties_normal_propertiesReturned() {
-        Properties properties = propertyConfigurer.getProperties();
-        assertThat(properties.size(), greaterThan(0));
-        assertThat(properties.getProperty("test.property"), is("value"));
-    }
-
-    @Test
-    public void getProperty_valueReferencesOtherProperty_referencedPropertyExpandedIntoValue() {
-        Properties properties = propertyConfigurer.getProperties();
-        assertThat(properties.size(), greaterThan(0));
-        assertThat(properties.getProperty("test.reference"), is("value-reference"));
+    public void getLoadedPropertyFiles_normal_expectedFilesLoadedInExpectedOrder() {
+        GenericXmlApplicationContext context = createContextManually("testprofile");
+        ConfigurationPropertyPlaceholderConfigurer configurer = context.getBean(ConfigurationPropertyPlaceholderConfigurer.class);
+        List<Resource> loadedFiles = configurer.getLoadedPropertyFiles();
+        assertThat(loadedFiles.size(), is(2));
+        assertThat(loadedFiles.get(0).toString(), containsString("/gb-conf/greenbird-default.properties"));
+        assertThat(loadedFiles.get(1).toString(), containsString("/gb-conf/greenbird-testprofile.properties"));
     }
 
 }

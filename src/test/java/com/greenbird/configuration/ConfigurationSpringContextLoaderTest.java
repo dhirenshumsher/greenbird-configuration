@@ -7,7 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class GreenbirdSpringContextLoaderTest extends ContextLoadingTestBase {
+public class ConfigurationSpringContextLoaderTest extends ContextLoadingTestBase {
     @Autowired
     private ContextTestBean1 testBean1;
     @Autowired

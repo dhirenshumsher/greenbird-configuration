@@ -187,7 +187,7 @@
                                 Skipping negative testing of ResourcePatternResolver which is instantiated internally.
                             -->
                             <regex>
-                                <pattern>.*\.GreenbirdResourceFinder</pattern>
+                                <pattern>.*\.ResourceFinder</pattern>
                                 <lineRate>75</lineRate>
                             </regex>
                         </regexes>

@@ -11,10 +11,10 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class GreenbirdResourceFinderTest {
+public class ResourceFinderTest {
     @Test
     public void findContextDefinitions_normal_relevantModulesFound() throws Exception {
-        List<Resource> greenbirdModules = asList(new GreenbirdResourceFinder().findContextDefinitions());
+        List<Resource> greenbirdModules = asList(new ResourceFinder().findContextDefinitions());
         Iterable<Resource> relevantResources = filter(greenbirdModules, new Predicate<Resource>() {
             @Override
             public boolean apply(Resource resource) {
@@ -26,7 +26,7 @@ public class GreenbirdResourceFinderTest {
 
     @Test
     public void findConfigurationFilesForProfile_normal_relevantResourcesFound() {
-        Resource[] greenbirdModules = new GreenbirdResourceFinder().findConfigurationFilesForProfile("testprofile");
+        Resource[] greenbirdModules = new ResourceFinder().findConfigurationFilesForProfile("testprofile");
         assertThat(greenbirdModules.length, is(1));
         assertThat(resourceContains(greenbirdModules[0], "gb-conf/greenbird-testprofile.properties"), is(true));
     }

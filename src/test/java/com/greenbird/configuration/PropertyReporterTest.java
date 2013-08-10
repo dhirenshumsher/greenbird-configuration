@@ -26,8 +26,7 @@ public class PropertyReporterTest {
                 prop("three", "valueThree")
         ));
         String report = buildPropertyReport(configuration);
-        assertThat(report, is(String.format("using properties :%sone   = valueOne%sthree = valueThree%stwo   = valueTwo%s",
-                LS, LS, LS, LS)));
+        assertThat(report, is(String.format("one   = valueOne%sthree = valueThree%stwo   = valueTwo%s", LS, LS, LS)));
     }
 
     @Test
