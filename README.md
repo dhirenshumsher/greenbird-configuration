@@ -75,7 +75,7 @@ The main functionality of greenbird-configuration is to automatically load and m
 #### The `gb-config` folder
 greenbird-configuration loads configuration properties and Spring context definitions from the classpath.  
 The files needs to be placed under the root folder `gb-config` in your classpath and follow the naming patterns described below.  
-You can add the files to sub-folders if you like. All compliant files will be loaded whether they are in a sub-folder or not.
+You can add files to sub-folders if you like. All compliant files will be loaded whether they are in a sub-folder or not.
 Example setup with standard Maven directory layout where all files will be loaded:
 
 ```bash
@@ -129,11 +129,15 @@ The name of the default profile is configurable but by default it is "default".
 
 greenbird-configuration loads properties in this manner:
 
-1. Find all property files related to the default profile(s) and load them.
-2. If any profiles are explicitly activated: Load all property files related to the activated profiles.
+1. Find all property files related to the pseudo profile `preset` and load them.
+2. Find all property files related to the default profile(s) and load them.
+3. If any profiles are explicitly activated: Load all property files related to the activated profiles.
 
 The last loaded property value will be used when a property is defined more than one time. 
 In other words: Later loaded properties takes precedence over (overrides) earlier loaded ones. 
+
+The `preset` pseudo profile (e.g. `*-preset.properties` files) should be used when you are creating reusable library based on greenbird-configuration.
+This enables you to define a sensible preset configuration for your library whilst the users of the library can override configuration values as needed.
 
 greenbird-configuration will always load any property files related to the default profile(s), even when you have activated another profile.  
 This is by design. It enables you to define default values for all properties in the file associated with the default profile and only add necessary overrides in the environment specific property files.
