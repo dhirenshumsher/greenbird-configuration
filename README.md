@@ -230,6 +230,34 @@ You can also tell greenbird-configuration to mask additional values by setting t
 The value must be a valid Java regular expression that matches the whole property name. The matching will be case insensitive.
 E.g. if you want to mask values defining host names you could add the following configuration `greenbird.config.mask.pattern=.*host.*`.
 
+#### Advanced loading
+For your production code you will normally load greenbird-configuration by activating Spring classpath scanning for the 
+`com.greenbird.configuration` package in your main Spring configuration file:  
+                                                                        
+```xml
+    <ctx:component-scan base-package="com.greenbird.configuration"/>
+```
+
+This is normally the entire content of your main Spring configuration file. Everything else will be automatically loaded by greenbird-configuration.
+ 
+If you need you can configure greenbird-configuration to load only some of it's sub-systems instead of all of them.
+This is done through limiting the Spring classpath scanning to selected sub-packages. 
+Here is an overview of the 4 sub-systems and their packages:
+
+- Configuration properties (`com.greenbird.configuration.properties`): Automatic loading of configuration properties.
+- Context definitions (`com.greenbird.configuration.context`): Automatic loading of Spring context definitions.
+- Report (`com.greenbird.configuration.report`): Logging of loaded properties and components.
+- JMX (`com.greenbird.configuration.jmx`): Exposing report data via [JMX].
+
+You can control which of these subsystems are loaded by only specifying the packages you need. E.g.:
+```xml
+    <ctx:component-scan base-package="com.greenbird.configuration.properties, com.greenbird.configuration.report"/>
+```
+..will load configuration properties and log them, but will not load Spring definitions or expose data via [JMX].
+
+This kind of explicit sub-system loading can be especially useful when testing. I.e. if you want to load only some specific Spring context for your test.
+Then you will typically not load the context definitions sub-systems but load Spring definition files explicitly in your tests instead.
+
 
 ## History
 - [1.0.0-SNAPSHOT]: Initial release.
