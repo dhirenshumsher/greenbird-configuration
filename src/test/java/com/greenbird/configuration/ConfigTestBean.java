@@ -13,6 +13,8 @@ public class ConfigTestBean {
     private String value2;
     @Value("${default.test.property}")
     private String defaultValue;
+    @Value("${preset.test.property}")
+    private String presetValue;
     @Value("${test.uuid}")
     private String uuid;
 
@@ -37,5 +39,9 @@ public class ConfigTestBean {
 
     public String getEnvironmentValue() {
         return environment.getProperty("environment.test.property");
+    }
+
+    public String getPresetValue() {
+        return presetValue;
     }
 }

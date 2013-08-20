@@ -21,6 +21,7 @@ import static com.greenbird.configuration.PropertyReporter.buildPropertyReport;
 
 @Component
 public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer {
+    private static final String PRESET_PROFILE = "preset";
     public static final String GREENBIRD_CONFIG_UUID_KEY = "GREENBIRD_CONFIG_UUID";
     private static final Pattern GREENBIRD_CONFIG_UUID_PATTERN = Pattern.compile(GREENBIRD_CONFIG_UUID_KEY);
 
@@ -53,7 +54,9 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
         ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder =
                 new ConstrettoBuilder(new GreenbirdConfigurationContextResolver(environment)).createPropertiesStore();
 
-        // load default properties first so they can be overridden
+        // load preset properties first of all
+        addPropertyResources(propertiesBuilder, PRESET_PROFILE);
+        // load default properties before the active ones so they can be overridden
         addPropertyResources(propertiesBuilder, environment.getDefaultProfiles());
         addPropertyResources(propertiesBuilder, environment.getActiveProfiles());
 

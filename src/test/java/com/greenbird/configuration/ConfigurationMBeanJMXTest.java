@@ -39,8 +39,9 @@ public class ConfigurationMBeanJMXTest extends ContextLoadingTestBase {
     @Test
     public void getLoadedConfigurationFiles_normal_expectedFilesReturned() throws Exception {
         List<String> configurationFiles = attribute("LoadedConfigurationFiles");
-        assertThat(configurationFiles.size(), is(1));
-        assertThat(configurationFiles.get(0), containsString("/gb-conf/greenbird-default.properties"));
+        assertThat(configurationFiles.size(), is(2));
+        assertThat(configurationFiles.get(0), containsString("/gb-conf/greenbird-preset.properties"));
+        assertThat(configurationFiles.get(1), containsString("/gb-conf/greenbird-default.properties"));
     }
 
     @Test

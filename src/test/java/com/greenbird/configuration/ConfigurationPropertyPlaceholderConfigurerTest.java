@@ -55,6 +55,11 @@ public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadi
     }
 
     @Test
+    public void configure_presetValueNotOverridden_presetValueIsUsed() {
+        assertThat(testBean.getPresetValue(), is("presetValue"));
+    }
+
+    @Test
     public void createPropertyReport_normal_propertiesReportedAsExpected() {
         String message = propertyConfigurer.createPropertyReport();
         assertThat(message, containsString("default.test.property"));
@@ -76,9 +81,10 @@ public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadi
         GenericXmlApplicationContext context = createContextManually("testprofile");
         ConfigurationPropertyPlaceholderConfigurer configurer = context.getBean(ConfigurationPropertyPlaceholderConfigurer.class);
         List<Resource> loadedFiles = configurer.getLoadedPropertyFiles();
-        assertThat(loadedFiles.size(), is(2));
-        assertThat(loadedFiles.get(0).toString(), containsString("/gb-conf/greenbird-default.properties"));
-        assertThat(loadedFiles.get(1).toString(), containsString("/gb-conf/greenbird-testprofile.properties"));
+        assertThat(loadedFiles.size(), is(3));
+        assertThat(loadedFiles.get(0).toString(), containsString("/gb-conf/greenbird-preset.properties"));
+        assertThat(loadedFiles.get(1).toString(), containsString("/gb-conf/greenbird-default.properties"));
+        assertThat(loadedFiles.get(2).toString(), containsString("/gb-conf/greenbird-testprofile.properties"));
     }
 
 }
