@@ -16,8 +16,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.greenbird.configuration.PropertyReporter.buildPropertyReport;
-
 
 @Component
 public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesPlaceholderConfigurer {
@@ -26,8 +24,8 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
     private static final Pattern GREENBIRD_CONFIG_UUID_PATTERN = Pattern.compile(GREENBIRD_CONFIG_UUID_KEY);
 
     private ResourceFinder resourceFinder = new ResourceFinder();
-    private ConstrettoConfiguration configuration;
     private List<Resource> loadedPropertyFiles = new ArrayList<Resource>();
+    private ConstrettoConfiguration configuration;
 
     @Override
     public void setEnvironment(Environment environment) {
@@ -84,7 +82,8 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
     }
 
     public String createPropertyReport() {
-        return buildPropertyReport(configuration);
+        String maskPattern = configuration.evaluateToString(PropertyReportCreator.MASK_PATTERN_PROPERTY);
+        return new PropertyReportCreator(maskPattern).createPropertyReport(configuration);
     }
 
     public List<Resource> getLoadedPropertyFiles() {

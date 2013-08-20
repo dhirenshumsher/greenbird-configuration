@@ -8,20 +8,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-class PropertyReporter {
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile(".*(\\.pw|password|passwd|pwd).*", Pattern.CASE_INSENSITIVE);
+import static org.springframework.util.StringUtils.hasText;
+
+class PropertyReportCreator {
+    public static final String MASK_PATTERN_PROPERTY = "greenbird.config.mask.pattern";
+    private static final Pattern DEFAULT_MASKING_PATTERN =
+            Pattern.compile(".*(\\.pw|password|passwd|pwd).*", Pattern.CASE_INSENSITIVE);
     private static final String LS = System.getProperty("line.separator");
-    private static final PropertyReporter INSTANCE = new PropertyReporter();
+    private Pattern additionalMaskingPattern = null;
 
-    private PropertyReporter() {
-        //NOP
+    PropertyReportCreator(String maskPattern) {
+        if (hasText(maskPattern)) {
+            additionalMaskingPattern = Pattern.compile(maskPattern, Pattern.CASE_INSENSITIVE);
+        }
     }
 
-    static String buildPropertyReport(ConstrettoConfiguration configuration) {
-        return INSTANCE.doBuildPropertyReport(configuration);
-    }
-
-    private String doBuildPropertyReport(ConstrettoConfiguration configuration) {
+    String createPropertyReport(ConstrettoConfiguration configuration) {
         int maxNameLength = getMaxPropertyLength(configuration);
         List<Property> properties = sortProperties(configuration);
         StringBuilder reportBuilder = new StringBuilder();
@@ -55,9 +57,14 @@ class PropertyReporter {
     private String formatValue(Property property) {
         String key = property.getKey();
         String value = property.getValue();
-        if (PASSWORD_PATTERN.matcher(key).matches()) {
+        if (valueShouldBeMasked(key)) {
             value = "*****";
         }
         return value;
+    }
+
+    private boolean valueShouldBeMasked(String key) {
+        return DEFAULT_MASKING_PATTERN.matcher(key).matches() ||
+                additionalMaskingPattern != null && additionalMaskingPattern.matcher(key).matches();
     }
 }

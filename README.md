@@ -220,6 +220,17 @@ Attributes:
 - LoadedSpringDefinitionFiles (List\<String>)
 - BeansInContext (List\<String>)
 
+##### Value masking
+There are some configuration values that you do not want to expose. E.g. passwords.  
+greenbird-configuration can mask (*****) sensitive values when reporting on properties.
+By default any property with a name matching the regular expression `.*(\.pw|password|passwd|pwd).*` will have it's value masked in reports. 
+The matching is case insensitive.
+
+You can also tell greenbird-configuration to mask additional values by setting the `greenbird.config.mask.pattern` configuration property. 
+The value must be a valid Java regular expression that matches the whole property name. The matching will be case insensitive.
+E.g. if you want to mask values defining host names you could add the following configuration `greenbird.config.mask.pattern=.*host.*`.
+
+
 ## History
 - [1.0.0-SNAPSHOT]: Initial release.
 
