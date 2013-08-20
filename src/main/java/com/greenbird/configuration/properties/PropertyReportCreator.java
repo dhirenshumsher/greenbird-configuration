@@ -1,4 +1,4 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.properties;
 
 import com.google.common.collect.Ordering;
 import org.constretto.ConstrettoConfiguration;

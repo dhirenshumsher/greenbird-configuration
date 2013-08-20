@@ -1,4 +1,4 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.properties;
 
 import org.junit.Before;
 import org.junit.Test;

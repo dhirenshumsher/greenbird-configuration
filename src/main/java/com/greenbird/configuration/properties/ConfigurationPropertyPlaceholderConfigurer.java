@@ -1,5 +1,6 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.properties;
 
+import com.greenbird.configuration.util.ResourceFinder;
 import org.constretto.ConstrettoBuilder;
 import org.constretto.ConstrettoConfiguration;
 import org.constretto.exception.ConstrettoExpressionException;

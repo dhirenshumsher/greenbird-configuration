@@ -16,8 +16,12 @@ public abstract class ContextLoadingTestBase {
         System.setProperty("spring.profiles.active", "");
     }
 
-    protected GenericXmlApplicationContext createContextManually(String... activeProfiles) {
+    protected GenericXmlApplicationContext createContextForProfiles(String... activeProfiles) {
         System.setProperty("spring.profiles.active", Joiner.on(",").join(activeProfiles));
         return new GenericXmlApplicationContext("/test-spring-context.xml");
+    }
+
+    protected GenericXmlApplicationContext createContextForConfiguration(String... configurationPaths) {
+        return new GenericXmlApplicationContext(configurationPaths);
     }
 }

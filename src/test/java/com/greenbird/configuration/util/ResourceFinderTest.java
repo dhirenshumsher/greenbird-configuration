@@ -1,4 +1,4 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.util;
 
 import com.google.common.base.Predicate;
 import org.junit.Test;

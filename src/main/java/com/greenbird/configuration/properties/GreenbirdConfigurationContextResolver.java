@@ -1,4 +1,4 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.properties;
 
 import org.constretto.resolver.ConfigurationContextResolver;
 import org.springframework.core.env.Environment;

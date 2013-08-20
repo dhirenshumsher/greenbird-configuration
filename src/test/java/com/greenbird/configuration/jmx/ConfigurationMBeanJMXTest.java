@@ -1,6 +1,7 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.jmx;
 
 import com.google.common.base.Joiner;
+import com.greenbird.configuration.ContextLoadingTestBase;
 import com.greenbird.test.GreenbirdTestException;
 import org.junit.Before;
 import org.junit.Test;

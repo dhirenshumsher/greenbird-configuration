@@ -1,9 +1,12 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.report;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Ordering;
+import com.greenbird.configuration.context.SpringContextLoader;
+import com.greenbird.configuration.properties.ConfigurationPropertyPlaceholderConfigurer;
+import com.greenbird.configuration.util.ResourceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -19,6 +22,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static ch.lambdaj.Lambda.join;
+import static com.greenbird.configuration.util.SpringContextUtils.getBeanIfAvailable;
 import static java.util.Arrays.asList;
 
 @Service
@@ -28,12 +32,13 @@ public class ConfigurationReporter implements ApplicationContextAware {
     private static Joiner commaJoiner = Joiner.on(", ");
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private ConfigurationPropertyPlaceholderConfigurer placeholderConfigurer;
-    private ResourceFinder resourceFinder;
+    private ApplicationContext applicationContext = null;
+    private ResourceFinder resourceFinder = new ResourceFinder();
     private Environment environment;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
         logConfigurationReport(applicationContext);
     }
 
@@ -76,30 +81,54 @@ public class ConfigurationReporter implements ApplicationContextAware {
     }
 
     private void buildPropertyFilesReport(StringBuilder reportBuilder) {
+        ConfigurationPropertyPlaceholderConfigurer placeholderConfigurer =
+                getBeanIfAvailable(applicationContext, ConfigurationPropertyPlaceholderConfigurer.class);
         reportBuilder
                 .append(LS)
                 .append("AUTO-LOADED CONFIGURATION FILES")
                 .append(LS)
                 .append("-------------------------------")
                 .append(LS);
-        Joiner.on(LS).appendTo(reportBuilder, placeholderConfigurer.getLoadedPropertyFiles());
+
+        if (placeholderConfigurer != null) {
+            Joiner.on(LS).appendTo(reportBuilder, placeholderConfigurer.getLoadedPropertyFiles());
+        } else {
+            reportBuilder.append("No files to report as configuration property sub-system has not been loaded.");
+        }
+
         reportBuilder.append(LS);
     }
 
     private void buildPropertyReport(StringBuilder reportBuilder) {
+        ConfigurationPropertyPlaceholderConfigurer placeholderConfigurer =
+                getBeanIfAvailable(applicationContext, ConfigurationPropertyPlaceholderConfigurer.class);
+        String report;
+        if (placeholderConfigurer != null) {
+            report = placeholderConfigurer.createPropertyReport();
+        } else {
+            report = "No properties to report as configuration property sub-system has not been loaded." + LS;
+        }
+
         reportBuilder
                 .append(LS)
                 .append("CONFIGURATION PROPERTIES")
                 .append(LS)
                 .append("------------------------------------")
                 .append(LS)
-                .append(placeholderConfigurer.createPropertyReport())
+                .append(report)
                 .append(LS);
     }
 
     private void buildSpringDefinitionsReport(StringBuilder reportBuilder) {
-        List<Resource> moduleResource = asList(resourceFinder.findContextDefinitions());
-        String result = join(moduleResource, LS);
+        String result;
+        if (getBeanIfAvailable(applicationContext, SpringContextLoader.class) != null) {
+            List<Resource> moduleResource = asList(resourceFinder.findContextDefinitions());
+            result = join(moduleResource, LS);
+        } else {
+            result = "No files to report as Spring definition sub-system has not been loaded.";
+        }
+
+
         reportBuilder
                 .append("AUTO-LOADED SPRING DEFINITION FILES")
                 .append(LS)
@@ -136,16 +165,6 @@ public class ConfigurationReporter implements ApplicationContextAware {
 
     private void buildFooter(StringBuilder reportBuilder) {
         reportBuilder.append(RULER).append(LS).append(LS);
-    }
-
-    @Autowired
-    public void setResourceFinder(ResourceFinder resourceFinder) {
-        this.resourceFinder = resourceFinder;
-    }
-
-    @Autowired
-    public void setPlaceholderConfigurer(ConfigurationPropertyPlaceholderConfigurer placeholderConfigurer) {
-        this.placeholderConfigurer = placeholderConfigurer;
     }
 
     @Autowired

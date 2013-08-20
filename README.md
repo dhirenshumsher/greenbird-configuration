@@ -150,7 +150,7 @@ Projects with a large amount of overrides would probably benefit from using sepa
 With all this automatic loading of data it is important to be able to verify what has been loaded and from where. greenbird-configuration makes this information available in two ways.
 
 ##### Log report
-On startup we log a configuration report on the INFO level via [SLF4J] on the `com.greenbird.configuration.ConfigurationReporter` log category.
+On startup we log a configuration report on the INFO level via [SLF4J] on the `com.greenbird.configuration.report.ConfigurationReporter` log category.
 
 If you activate INFO logging for this category you will be able to see output like this example from one of our unit tests:
 

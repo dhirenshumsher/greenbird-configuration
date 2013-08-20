@@ -1,5 +1,8 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.properties;
 
+import com.greenbird.configuration.ConfigPojoTestBean;
+import com.greenbird.configuration.ConfigTestBean;
+import com.greenbird.configuration.ContextLoadingTestBase;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericXmlApplicationContext;
@@ -7,7 +10,7 @@ import org.springframework.core.io.Resource;
 
 import java.util.List;
 
-import static com.greenbird.configuration.ConfigurationPropertyPlaceholderConfigurer.GREENBIRD_CONFIG_UUID_KEY;
+import static com.greenbird.configuration.properties.ConfigurationPropertyPlaceholderConfigurer.GREENBIRD_CONFIG_UUID_KEY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.containsString;
@@ -41,7 +44,7 @@ public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadi
 
     @Test
     public void configure_springProfilesActive_profilesAreConsidered() {
-        GenericXmlApplicationContext context = createContextManually("prod", "other", "testprofile");
+        GenericXmlApplicationContext context = createContextForProfiles("prod", "other", "testprofile");
         ConfigTestBean bean = context.getBean("configTestBean", ConfigTestBean.class);
         assertThat(bean.getValue(), is("valueProd"));
         assertThat(bean.getValue2(), is("value2Other"));
@@ -78,7 +81,7 @@ public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadi
 
     @Test
     public void getLoadedPropertyFiles_normal_expectedFilesLoadedInExpectedOrder() {
-        GenericXmlApplicationContext context = createContextManually("testprofile");
+        GenericXmlApplicationContext context = createContextForProfiles("testprofile");
         ConfigurationPropertyPlaceholderConfigurer configurer = context.getBean(ConfigurationPropertyPlaceholderConfigurer.class);
         List<Resource> loadedFiles = configurer.getLoadedPropertyFiles();
         assertThat(loadedFiles.size(), is(4));

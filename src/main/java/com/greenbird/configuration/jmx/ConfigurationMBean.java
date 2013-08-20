@@ -1,9 +1,12 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.jmx;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.greenbird.configuration.context.SpringContextLoader;
+import com.greenbird.configuration.properties.ConfigurationPropertyPlaceholderConfigurer;
+import com.greenbird.configuration.util.ResourceFinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -14,18 +17,20 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static com.greenbird.configuration.util.SpringContextUtils.getBeanIfAvailable;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 @Service
 @ManagedResource("greenbird.configuration:name=greenbirdConfiguration,type=GreenbirdConfiguration")
 public class ConfigurationMBean implements ApplicationContextAware {
-    private ConfigurationPropertyPlaceholderConfigurer propertyConfigurer;
-    private ResourceFinder resourceFinder;
+    private ResourceFinder resourceFinder = new ResourceFinder();
     private Environment environment;
     private ApplicationContext applicationContext;
+    private ConfigurationPropertyPlaceholderConfigurer placeholderConfigurer = null;
 
     @ManagedAttribute
     public String getActiveSpringProfiles() {
@@ -39,27 +44,45 @@ public class ConfigurationMBean implements ApplicationContextAware {
 
     @ManagedAttribute
     public List<String> getLoadedConfigurationFiles() {
-        return Lists.transform(propertyConfigurer.getLoadedPropertyFiles(), new Function<Resource, String>() {
-            @Override
-            public String apply(Resource resource) {
-                return resource.toString();
-            }
-        });
+        List<String> result;
+        if (placeholderConfigurer != null) {
+            result = Lists.transform(placeholderConfigurer.getLoadedPropertyFiles(), new Function<Resource, String>() {
+                @Override
+                public String apply(Resource resource) {
+                    return resource.toString();
+                }
+            });
+        } else {
+            result = Collections.emptyList();
+        }
+        return result;
     }
 
     @ManagedAttribute
     public String getPropertiesReport() {
-        return propertyConfigurer.createPropertyReport();
+        String result;
+        if (placeholderConfigurer != null) {
+            result = placeholderConfigurer.createPropertyReport();
+        } else {
+            result = "";
+        }
+        return result;
     }
 
     @ManagedAttribute
     public List<String> getLoadedSpringDefinitionFiles() {
-        return Lists.transform(asList(resourceFinder.findContextDefinitions()), new Function<Resource, String>() {
-            @Override
-            public String apply(Resource resource) {
-                return resource.toString();
-            }
-        });
+        List<String> result;
+        if (getBeanIfAvailable(applicationContext, SpringContextLoader.class) != null) {
+            result = Lists.transform(asList(resourceFinder.findContextDefinitions()), new Function<Resource, String>() {
+                @Override
+                public String apply(Resource resource) {
+                    return resource.toString();
+                }
+            });
+        } else {
+            result = Collections.emptyList();
+        }
+        return result;
     }
 
     @ManagedAttribute
@@ -88,20 +111,16 @@ public class ConfigurationMBean implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    @Autowired
-    public void setPropertyConfigurer(ConfigurationPropertyPlaceholderConfigurer propertyConfigurer) {
-        this.propertyConfigurer = propertyConfigurer;
-    }
-
-    @Autowired
-    public void setResourceFinder(ResourceFinder resourceFinder) {
-        this.resourceFinder = resourceFinder;
+        placeholderConfigurer = getBeanIfAvailable(applicationContext, ConfigurationPropertyPlaceholderConfigurer.class);
     }
 
     @Autowired
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    // for test
+    public void setResourceFinder(ResourceFinder resourceFinder) {
+        this.resourceFinder = resourceFinder;
     }
 }

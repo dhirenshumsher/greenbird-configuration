@@ -1,16 +1,15 @@
-package com.greenbird.configuration;
+package com.greenbird.configuration.util;
 
+import com.greenbird.configuration.ConfigurationException;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 import static java.lang.String.format;
 
-@Service
 public class ResourceFinder {
     public static final String CONFIG_ROOT_PATH = "classpath*:/gb-conf/**/";
     public static final String CONTEXT_PATTERN = CONFIG_ROOT_PATH + "*-context.xml";
