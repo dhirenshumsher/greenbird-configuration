@@ -136,7 +136,7 @@ greenbird-configuration loads properties in this manner:
 The last loaded property value will be used when a property is defined more than one time. 
 In other words: Later loaded properties takes precedence over (overrides) earlier loaded ones. 
 
-The `preset` pseudo profile (e.g. `*-preset.properties` files) should be used when you are creating reusable library based on greenbird-configuration.
+The `preset` pseudo profile (e.g. `*-preset.properties` files) should be used when you are creating a reusable library based on greenbird-configuration.
 This enables you to define a sensible preset configuration for your library whilst the users of the library can override configuration values as needed.
 
 greenbird-configuration will always load any property files related to the default profile(s), even when you have activated another profile.  
