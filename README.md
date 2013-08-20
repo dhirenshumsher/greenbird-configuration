@@ -255,7 +255,7 @@ You can control which of these subsystems are loaded by only specifying the pack
 ```
 ..will load configuration properties and log them, but will not load Spring definitions or expose data via [JMX].
 
-This kind of explicit sub-system loading can be especially useful when testing. I.e. if you want to load only some specific Spring context for your test.
+This kind of explicit sub-system loading can be especially useful when testing. E.g. if you want to load only some specific Spring context for your test.
 Then you will typically not load the context definitions sub-systems but load Spring definition files explicitly in your tests instead.
 
 
