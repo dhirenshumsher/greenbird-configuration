@@ -256,13 +256,13 @@ You can control which of these subsystems are loaded by only specifying the pack
 ..will load configuration properties and log them, but will not load Spring definitions or expose data via [JMX].
 
 This kind of explicit sub-system loading can be especially useful when testing. E.g. if you want to load only some specific Spring context for your test.
-Then you will typically not load the context definitions sub-systems but load Spring definition files explicitly in your tests instead.
+In such a scenario you will typically not load the context definitions sub-system but load Spring definition files explicitly in your tests instead.
 
 
 ## History
-- [1.0.0-SNAPSHOT]: Initial release.
+- [1.0.0]: Initial release.
 
-[1.0.0-SNAPSHOT]:      https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
+[1.0.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
 [build-link]:          https://build.greenbird.com/job/greenbird-configuration/
