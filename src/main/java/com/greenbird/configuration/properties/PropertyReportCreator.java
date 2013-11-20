@@ -1,7 +1,6 @@
 package com.greenbird.configuration.properties;
 
 import com.google.common.collect.Ordering;
-import org.constretto.ConstrettoConfiguration;
 import org.constretto.Property;
 
 import java.util.Comparator;
@@ -23,7 +22,7 @@ class PropertyReportCreator {
         }
     }
 
-    String createPropertyReport(ConstrettoConfiguration configuration) {
+    String createPropertyReport(Iterable<Property> configuration) {
         int maxNameLength = getMaxPropertyLength(configuration);
         List<Property> properties = sortProperties(configuration);
         StringBuilder reportBuilder = new StringBuilder();
@@ -35,7 +34,7 @@ class PropertyReportCreator {
         return reportBuilder.toString();
     }
 
-    private int getMaxPropertyLength(ConstrettoConfiguration configuration) {
+    private int getMaxPropertyLength(Iterable<Property> configuration) {
         int maxNameLength = 0;
         for (Property property : configuration) {
             maxNameLength = Math.max(property.getKey().length(), maxNameLength);
@@ -48,7 +47,6 @@ class PropertyReportCreator {
             @Override
             public int compare(Property property1, Property property2) {
                 return property1.getKey().compareTo(property2.getKey());
-
             }
         };
         return Ordering.from(propertyComparator).sortedCopy(properties);

@@ -1,8 +1,10 @@
 package com.greenbird.configuration.properties;
 
+import com.google.common.collect.Iterators;
 import com.greenbird.configuration.util.ResourceFinder;
 import org.constretto.ConstrettoBuilder;
 import org.constretto.ConstrettoConfiguration;
+import org.constretto.Property;
 import org.constretto.exception.ConstrettoExpressionException;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -11,8 +13,11 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,50 +31,93 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
 
     private ResourceFinder resourceFinder = new ResourceFinder();
     private List<Resource> loadedPropertyFiles = new ArrayList<Resource>();
-    private ConstrettoConfiguration configuration;
+    private ConstrettoConfiguration classpathConfiguration;
+    private ConstrettoConfiguration fileSystemConfiguration;
 
     @Override
     public void setEnvironment(Environment environment) {
-        loadProperties(environment);
+        loadClasspathProperties(environment);
+        loadFileSystemProperties(environment);
         ((ConfigurableEnvironment) environment).getPropertySources().addLast(new PropertySource<Object>("gbConfSource") {
             @Override
             public Object getProperty(String name) {
-                String value = null;
-                try {
-                    value = configuration.evaluateTo(String.class, name);
-                } catch (ConstrettoExpressionException e) {
-                    // NOP - value not found is OK
-                }
-                if (value != null && value.contains(GREENBIRD_CONFIG_UUID_KEY)) {
-                    value = buildRandomPropertyValue(value);
-                }
-                return value;
+                return ConfigurationPropertyPlaceholderConfigurer.this.getProperty(name);
             }
         });
         super.setEnvironment(environment);
     }
 
-    private void loadProperties(Environment environment) {
+    private void loadClasspathProperties(Environment environment) {
         ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder =
                 new ConstrettoBuilder(new GreenbirdConfigurationContextResolver(environment)).createPropertiesStore();
 
         // load preset properties first of all
-        addPropertyResources(propertiesBuilder, PRESET_PROFILE);
+        addClasspathPropertyResources(propertiesBuilder, PRESET_PROFILE);
         // load default properties before the active ones so they can be overridden
-        addPropertyResources(propertiesBuilder, environment.getDefaultProfiles());
-        addPropertyResources(propertiesBuilder, environment.getActiveProfiles());
+        addClasspathPropertyResources(propertiesBuilder, environment.getDefaultProfiles());
+        addClasspathPropertyResources(propertiesBuilder, environment.getActiveProfiles());
 
-        configuration = propertiesBuilder.done().getConfiguration();
+        classpathConfiguration = propertiesBuilder.done().getConfiguration();
     }
 
-    private void addPropertyResources(ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder, String... profiles) {
+    private void loadFileSystemProperties(Environment environment) {
+        ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder =
+                new ConstrettoBuilder(new GreenbirdConfigurationContextResolver(environment)).createPropertiesStore();
+
+        Set<File> configurationDirectories = new ConfigurationDirectoryLoader().getConfigurationDirectories(classpathConfiguration);
+
+        // load preset properties first of all
+        addFileSystemPropertyResources(propertiesBuilder, configurationDirectories, PRESET_PROFILE);
+        // load default properties before the active ones so they can be overridden
+        addFileSystemPropertyResources(propertiesBuilder, configurationDirectories, environment.getDefaultProfiles());
+        addFileSystemPropertyResources(propertiesBuilder, configurationDirectories, environment.getActiveProfiles());
+
+        fileSystemConfiguration = propertiesBuilder.done().getConfiguration();
+    }
+
+    private void addClasspathPropertyResources(ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder, String... profiles) {
         for (String profile : profiles) {
-            Resource[] resources = resourceFinder.findConfigurationFilesForProfile(profile);
-            for (Resource propertyResource : resources) {
-                loadedPropertyFiles.add(propertyResource);
-                propertiesBuilder.addResource(propertyResource);
+            Resource[] resources = resourceFinder.findClasspathConfigurationFilesForProfile(profile);
+            addResources(propertiesBuilder, resources);
+        }
+    }
+
+    private void addFileSystemPropertyResources(ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder, Set<File> configurationDirectories, String... profiles) {
+        for (File configurationDirectory : configurationDirectories) {
+            for (String profile : profiles) {
+                Resource[] resources = resourceFinder.findFileSystemConfigurationFilesForProfile(configurationDirectory, profile);
+                addResources(propertiesBuilder, resources);
             }
         }
+    }
+
+    private void addResources(ConstrettoBuilder.PropertiesStoreBuilder propertiesBuilder, Resource[] resources) {
+        for (Resource propertyResource : resources) {
+            loadedPropertyFiles.add(propertyResource);
+            propertiesBuilder.addResource(propertyResource);
+        }
+    }
+
+    private String getProperty(String name) {
+        // prefer properties from file system over properties from classpath
+        String value = getValue(name, fileSystemConfiguration);
+        if (value == null) {
+            value = getValue(name, classpathConfiguration);
+        }
+        if (value != null && value.contains(GREENBIRD_CONFIG_UUID_KEY)) {
+            value = buildRandomPropertyValue(value);
+        }
+        return value;
+    }
+
+    private String getValue(String name, ConstrettoConfiguration configuration) {
+        String value = null;
+        try {
+            value = configuration.evaluateTo(String.class, name);
+        } catch (ConstrettoExpressionException e) {
+            // NOP - value not found is OK
+        }
+        return value;
     }
 
     private String buildRandomPropertyValue(String value) {
@@ -83,8 +131,22 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
     }
 
     public String createPropertyReport() {
-        String maskPattern = configuration.evaluateToString(PropertyReportCreator.MASK_PATTERN_PROPERTY);
-        return new PropertyReportCreator(maskPattern).createPropertyReport(configuration);
+        String maskPattern = getProperty(PropertyReportCreator.MASK_PATTERN_PROPERTY);
+        Set<String> fileSystemPropertyNames = new HashSet<String>();
+        Set<Property> uniqueProperties = new HashSet<Property>();
+        Iterators.addAll(uniqueProperties, fileSystemConfiguration.iterator());
+
+        for (Property property : fileSystemConfiguration) {
+            fileSystemPropertyNames.add(property.getKey());
+        }
+
+        for (Property property : classpathConfiguration) {
+            if (!fileSystemPropertyNames.contains(property.getKey())) {
+                uniqueProperties.add(property);
+            }
+        }
+
+        return new PropertyReportCreator(maskPattern).createPropertyReport(uniqueProperties);
     }
 
     public List<Resource> getLoadedPropertyFiles() {

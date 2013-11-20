@@ -85,6 +85,26 @@ src/main/resources/gb-conf/props/myothermodule-default.properties
 src/main/resources/gb-conf/spring/myothermodule-context.xml
 ```
 
+#### Loading configuration properties from the file system
+It is possible to load configuration property files from the file system in addition to the classpath.
+You can configure one or more folders on the file system to be scanned for configuration properties in the same way as 
+the `gb-config` classpath folders are scanned.  
+
+Configuration loaded from the file system always takes precedence over the configuration loaded from the classpath.
+
+You define what folders to scan by defining them in properties with names ending with `greenbird.config.dir`. 
+So `greenbird.config.dir`, `foo.greenbird.config.dir` and `bar.greenbird.config.dir` can all be defined to load 
+different folders.
+
+There are three ways these properties can be defined:
+
+1.   As environment variables. Note that *nix environments do not allow periods (.) in environment variable names but 
+     you can use the synonym `greenbird_config_dir` instead. E.g. `export foo_greenbird_config_dir=/etc/myapp/myconfigfolder`.
+2.   As Java system properties. E.g. starting your app with `-Dfoo.greenbird.config.dir=/etc/myapp/myconfigfolder -Dbar.greenbird.config.dir=/etc/myapp/myotherconfigfolder`.
+3.   As configuration properties in your classpath configuration. E.g. adding `foo.greenbird.config.dir=/etc/myapp/myconfigfolder` to `/gb-conf/mymodule-prod.properties`.
+
+The list above also define the order of precedence between the loading methods. 
+
 #### Spring context definition files
 These are regular Spring configuration files. The only special requirement we have for them is that they are named using the `*-context.xml` naming pattern.
 In addition to vanilla Spring files you can also add other definition files that are based on Spring, E.g. Mule ESB flow definitions.
@@ -258,11 +278,12 @@ You can control which of these subsystems are loaded by only specifying the pack
 This kind of explicit sub-system loading can be especially useful when testing. E.g. if you want to load only some specific Spring context for your test.
 In such a scenario you will typically not load the context definitions sub-system but load Spring definition files explicitly in your tests instead.
 
-
 ## History
+- [1.1.0-SNAPSHOT]: Added support for loading configuration properties from the file system.
 - [1.0.0]: Initial release.
 
 [1.0.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
+[1.1.0-SNAPSHOT]:      https://github.com/greenbird/greenbird-configuration/issues?milestone=2&state=open
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
 [build-link]:          https://build.greenbird.com/job/greenbird-configuration/

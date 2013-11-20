@@ -3,11 +3,16 @@ package com.greenbird.configuration.properties;
 import com.greenbird.configuration.ConfigPojoTestBean;
 import com.greenbird.configuration.ConfigTestBean;
 import com.greenbird.configuration.ContextLoadingTestBase;
+import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static com.greenbird.configuration.properties.ConfigurationPropertyPlaceholderConfigurer.GREENBIRD_CONFIG_UUID_KEY;
@@ -18,6 +23,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadingTestBase {
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    
     @Autowired
     private ConfigTestBean testBean;
 
@@ -50,6 +58,16 @@ public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadi
         assertThat(bean.getValue2(), is("value2Other"));
         assertThat(bean.getEnvironmentValue(), is("envValueProd"));
         assertThat(bean.getDefaultValue(), is("testProfileValue"));
+    }
+
+    @Test
+    public void configure_fileSystemConfigurationDirectoryConfigured_fileSystemConfigurationTakesPrecedence() throws IOException {
+        File subFolder = temporaryFolder.newFolder("testConfig");
+        FileUtils.writeStringToFile(new File(subFolder, "greenbird-default.properties"), "default.test.property=testFileSystemValue");
+        System.setProperty(ConfigurationDirectoryLoader.CONFIG_DIR_PROPERTY, temporaryFolder.getRoot().getPath());
+        GenericXmlApplicationContext context = createContextForProfiles("testprofile");
+        ConfigTestBean bean = context.getBean("configTestBean", ConfigTestBean.class);
+        assertThat(bean.getDefaultValue(), is("testFileSystemValue"));
     }
 
     @Test
