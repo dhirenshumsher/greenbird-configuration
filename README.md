@@ -3,7 +3,7 @@ Library that simplifies configuration and context loading for Spring based proje
 
 Projects using this library will benefit from:
 - Automatic loading of Spring context definitions.
-- Automatic loading of configuration properties.
+- Automatic loading of configuration properties from classpath and file system.
 - Environments separated using regular Spring profiles.  
 - Automatic overloading of configuration properties for the active profile(s).
 - Profile-specific properties can either be defined in separate files or side-by-side in a single file.
@@ -36,7 +36,7 @@ Example dependency config:
 <dependency>
     <groupId>com.greenbird</groupId>
     <artifactId>greenbird-configuration</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -279,11 +279,11 @@ This kind of explicit sub-system loading can be especially useful when testing. 
 In such a scenario you will typically not load the context definitions sub-system but load Spring definition files explicitly in your tests instead.
 
 ## History
-- [1.1.0-SNAPSHOT]: Added support for loading configuration properties from the file system.
+- [1.1.0]: Added support for loading configuration properties from the file system.
 - [1.0.0]: Initial release.
 
 [1.0.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
-[1.1.0-SNAPSHOT]:      https://github.com/greenbird/greenbird-configuration/issues?milestone=2&state=open
+[1.1.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=2&state=closed
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
 [build-link]:          https://build.greenbird.com/job/greenbird-configuration/

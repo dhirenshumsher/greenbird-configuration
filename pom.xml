@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.greenbird</groupId>
         <artifactId>greenbird-os-parent</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <relativePath />
     </parent>
 
-    <name>Greenbird Configuration</name>
+    <name>greenbird Configuration</name>
     <description>Library that simplifies configuration and context loading for Spring based projects.</description>
     <url>https://github.com/greenbird/greenbird-configuration</url>
 
