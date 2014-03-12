@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -132,6 +133,12 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
 
     public String createPropertyReport() {
         String maskPattern = getProperty(PropertyReportCreator.MASK_PATTERN_PROPERTY);
+        Set<Property> uniqueProperties = getPropertySet();
+
+        return new PropertyReportCreator(maskPattern).createPropertyReport(uniqueProperties);
+    }
+
+    private Set<Property> getPropertySet() {
         Set<String> fileSystemPropertyNames = new HashSet<String>();
         Set<Property> uniqueProperties = new HashSet<Property>();
         Iterators.addAll(uniqueProperties, fileSystemConfiguration.iterator());
@@ -145,8 +152,15 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
                 uniqueProperties.add(property);
             }
         }
+        return uniqueProperties;
+    }
 
-        return new PropertyReportCreator(maskPattern).createPropertyReport(uniqueProperties);
+    public Properties getProperties() {
+        Properties properties = new Properties();
+        for (Property property : getPropertySet()) {
+            properties.setProperty(property.getKey(), property.getValue());
+        }
+        return properties;
     }
 
     public List<Resource> getLoadedPropertyFiles() {

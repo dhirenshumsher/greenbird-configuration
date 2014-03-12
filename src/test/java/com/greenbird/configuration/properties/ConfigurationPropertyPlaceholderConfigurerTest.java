@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import static com.greenbird.configuration.properties.ConfigurationPropertyPlaceholderConfigurer.GREENBIRD_CONFIG_UUID_KEY;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertThat;
 public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadingTestBase {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    
+
     @Autowired
     private ConfigTestBean testBean;
 
@@ -107,6 +108,12 @@ public class ConfigurationPropertyPlaceholderConfigurerTest extends ContextLoadi
         assertThat(loadedFiles.get(1).toString(), containsString("/gb-conf/greenbird-configuration-preset.properties"));
         assertThat(loadedFiles.get(2).toString(), containsString("/gb-conf/greenbird-default.properties"));
         assertThat(loadedFiles.get(3).toString(), containsString("/gb-conf/greenbird-testprofile.properties"));
+    }
+
+    @Test
+    public void getProperties_normal_propertiesInstanceContainingConfigurationReturned() {
+        Properties properties = propertyConfigurer.getProperties();
+        assertThat(properties.getProperty("test.reference"), is("value-reference"));
     }
 
 }
