@@ -279,11 +279,13 @@ This kind of explicit sub-system loading can be especially useful when testing. 
 In such a scenario you will typically not load the context definitions sub-system but load Spring definition files explicitly in your tests instead.
 
 ## History
+- [1.2.0-SNAPSHOT]: Added possibility for 3rd party components to look up configuration as regular Java `Properties`.
 - [1.1.0]: Added support for loading configuration properties from the file system.
 - [1.0.0]: Initial release.
 
 [1.0.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
 [1.1.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=2&state=closed
+[1.2.0-SNAPSHOT]:      https://github.com/greenbird/greenbird-configuration/issues?milestone=3&state=open
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
 [build-link]:          https://build.greenbird.com/job/greenbird-configuration/
