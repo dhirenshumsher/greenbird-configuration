@@ -12,4 +12,7 @@
 
     <bean name="beanToBeReported1" class="com.greenbird.configuration.sub.BeanToBeReported"/>
     <bean name="beanToBeReported2" class="com.greenbird.configuration.sub.BeanToBeReported"/>
+
+    <!-- This is expected to be skipped by the report component -->
+    <bean name="abstractBean" abstract="true"/>
 </beans>

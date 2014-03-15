@@ -7,6 +7,7 @@ import com.google.common.collect.Ordering;
 import com.greenbird.configuration.context.SpringContextLoader;
 import com.greenbird.configuration.properties.ConfigurationPropertyPlaceholderConfigurer;
 import com.greenbird.configuration.util.ResourceFinder;
+import org.springframework.beans.factory.BeanIsAbstractException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -89,7 +90,13 @@ public class ConfigurationMBean implements ApplicationContextAware {
     public List<String> getBeansInContext() {
         List<String> beans = new ArrayList<String>();
         for (String beanName : applicationContext.getBeanDefinitionNames()) {
-            Object bean = applicationContext.getBean(beanName);
+            Object bean;
+            try {
+                bean = applicationContext.getBean(beanName);
+            } catch (BeanIsAbstractException e) {
+                // skip abstract bean
+                continue;
+            }
             String beanClass = bean.getClass().getName();
             if (!beanClass.startsWith("org.springframework")) {
                 beans.add(format("%s (%s)", beanName, beanClass));

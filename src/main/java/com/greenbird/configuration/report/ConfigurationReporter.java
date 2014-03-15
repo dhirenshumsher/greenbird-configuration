@@ -10,6 +10,7 @@ import com.greenbird.configuration.util.ResourceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanIsAbstractException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -147,7 +148,13 @@ public class ConfigurationReporter implements ApplicationContextAware {
         String[] beanNames = applicationContext.getBeanDefinitionNames();
         Map<String, BeanPackage> packageMap = new TreeMap<String, BeanPackage>();
         for (String beanName : beanNames) {
-            Object bean = applicationContext.getBean(beanName);
+            Object bean;
+            try {
+                bean = applicationContext.getBean(beanName);
+            } catch (BeanIsAbstractException e) {
+                // skip abstract beans
+                continue;
+            }
             String packageName = bean.getClass().getPackage().getName();
             if (packageName.startsWith("org.springframework")) {
                 continue;

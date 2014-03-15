@@ -279,7 +279,7 @@ This kind of explicit sub-system loading can be especially useful when testing. 
 In such a scenario you will typically not load the context definitions sub-system but load Spring definition files explicitly in your tests instead.
 
 ## History
-- [1.2.0-SNAPSHOT]: Added possibility for 3rd party components to look up configuration as regular Java `Properties`.
+- [1.2.0-SNAPSHOT]: Added possibility for 3rd party components to look up configuration as regular Java `Properties`. Fixed bug where the report was failing on abstract Spring beans.
 - [1.1.0]: Added support for loading configuration properties from the file system.
 - [1.0.0]: Initial release.
 
