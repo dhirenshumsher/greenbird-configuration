@@ -11,6 +11,7 @@ Projects using this library will benefit from:
 - Cross pollination of Spring property placeholder values and `Environment` properties.  
 - Visibility of loaded components and configuration properties through logging and JMX.
 - Automatic loading of configuration and Spring definitions for all dependencies that are using greenbird-configuration.
+- Transparent support for the Mule and Camel frameworks with the [mule-configuration] and [camel-configuration] extensions.
 
 Part of the [greenbird] Open Source Java [projects].
 
@@ -287,15 +288,16 @@ In such a scenario you will typically not load the context definitions sub-syste
 [1.1.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=2&state=closed
 [1.2.0-SNAPSHOT]:      https://github.com/greenbird/greenbird-configuration/issues?milestone=3&state=open
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
+[camel-configuration]: https://github.com/greenbird/camel-configuration
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
 [build-link]:          https://build.greenbird.com/job/greenbird-configuration/
-[CausedByMatcher]:     https://github.com/greenbird/greenbird-configuration/blob/master/src/main/java/com/greenbird/test/matchers/CausedByMatcher.java
 [Constretto]:          http://constretto.github.io/
 [download]:            http://search.maven.org/#search|ga|1|greenbird-configuration
 [greenbird]:           http://greenbird.com/
 [issue-tracker]:       https://github.com/greenbird/greenbird-configuration/issues
 [JMX]:                 http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html
 [Maven]:               http://maven.apache.org/
+[mule-configuration]:  https://github.com/greenbird/mule-configuration
 [projects]:            http://greenbird.github.io/
 [snapshot repository]: https://oss.sonatype.org/content/repositories/snapshots/com/greenbird/greenbird-configuration
 [SLF4J]:               www.slf4j.org
