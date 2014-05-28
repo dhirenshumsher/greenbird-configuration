@@ -15,4 +15,17 @@
 
     <!-- This is expected to be skipped by the report component -->
     <bean name="abstractBean" abstract="true"/>
+
+    <!-- Enforce the creation of a dynamic proxy to be able to test the handling of empty package names -->
+    <bean id="proxiedBean" class="com.greenbird.configuration.InterfacedBeanImpl"/>
+    <bean id="debugInterceptor" class="org.springframework.aop.interceptor.DebugInterceptor"/>
+
+    <bean id="interfaced" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces"><value>com.greenbird.configuration.InterfacedBean</value></property>
+        <property name="interceptorNames">
+            <list>
+                <value>debugInterceptor</value>
+            </list>
+        </property>
+    </bean>
 </beans>

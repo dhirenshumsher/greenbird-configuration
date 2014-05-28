@@ -18,6 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -155,7 +156,7 @@ public class ConfigurationReporter implements ApplicationContextAware {
                 // skip abstract beans
                 continue;
             }
-            String packageName = bean.getClass().getPackage().getName();
+            String packageName = getPackageName(bean);
             if (packageName.startsWith("org.springframework")) {
                 continue;
             }
@@ -168,6 +169,19 @@ public class ConfigurationReporter implements ApplicationContextAware {
             packageMap.get(packageName).report(reportBuilder);
         }
         reportBuilder.append(LS);
+    }
+
+    private String getPackageName(Object bean) {
+        String result = "<no_package>";
+        Package thePackage = bean.getClass().getPackage();
+
+        if (thePackage != null) {
+            result = thePackage.getName();
+        } else if (bean instanceof Proxy) {
+            thePackage = bean.getClass().getInterfaces()[0].getPackage();
+            result = thePackage.getName() + " (by proxy)";
+        }
+        return result;
     }
 
     private void buildFooter(StringBuilder reportBuilder) {

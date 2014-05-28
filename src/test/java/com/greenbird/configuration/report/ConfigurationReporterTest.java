@@ -48,6 +48,8 @@ public class ConfigurationReporterTest extends ContextLoadingTestBase {
         assertThat(normalizedMessage, containsString("BEANS IN CONTEXT"));
         assertThat(normalizedMessage, containsString("com.greenbird.configuration: ConfigPojoTestBean (pojoTestBean)"));
         assertThat(normalizedMessage, containsString("com.greenbird.configuration.sub: BeanToBeReported (beanToBeReported1, beanToBeReported2)"));
+        assertThat(normalizedMessage, containsString("com.greenbird.configuration (by proxy)"));
+        assertThat(normalizedMessage, containsString("(interfaced)"));
     }
 
     @Test
