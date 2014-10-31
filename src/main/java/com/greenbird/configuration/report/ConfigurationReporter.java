@@ -19,6 +19,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -123,8 +124,11 @@ public class ConfigurationReporter implements ApplicationContextAware {
 
     private void buildSpringDefinitionsReport(StringBuilder reportBuilder) {
         String result;
-        if (getBeanIfAvailable(applicationContext, SpringContextLoader.class) != null) {
-            List<Resource> moduleResource = asList(resourceFinder.findContextDefinitions());
+        final SpringContextLoader springContextLoader = getBeanIfAvailable(applicationContext, SpringContextLoader.class);
+        if (springContextLoader != null) {
+            List<Resource> moduleResource = new ArrayList<Resource>();
+            moduleResource.addAll(asList(resourceFinder.findContextDefinitions()));
+            moduleResource.addAll(springContextLoader.getExternalResources());
             result = join(moduleResource, LS);
         } else {
             result = "No files to report as Spring definition sub-system has not been loaded.";

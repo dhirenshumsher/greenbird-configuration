@@ -166,4 +166,12 @@ public class ConfigurationPropertyPlaceholderConfigurer extends PropertySourcesP
     public List<Resource> getLoadedPropertyFiles() {
         return loadedPropertyFiles;
     }
+    
+    public ConstrettoConfiguration getClasspathConfiguration() {
+        return classpathConfiguration;
+    }
+    
+    public ConstrettoConfiguration getFileSystemConfiguration() {
+        return fileSystemConfiguration;
+    }
 }

@@ -15,12 +15,12 @@ import java.util.Set;
 
 import static java.lang.String.format;
 
-class ConfigurationDirectoryLoader {
+public class ConfigurationDirectoryLoader {
     public static final String CONFIG_DIR_PROPERTY = "greenbird.config.dir";
     public static final String NIX_FRIENDLY_CONFIG_DIR_PROPERTY = CONFIG_DIR_PROPERTY.replace(".", "_");
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    Set<File> getConfigurationDirectories(ConstrettoConfiguration classpathConfiguration) {
+    public Set<File> getConfigurationDirectories(ConstrettoConfiguration classpathConfiguration) {
         Set<String> uniquePaths = new LinkedHashSet<String>();
         Set<File> uniqueDirectories = new LinkedHashSet<File>();
 

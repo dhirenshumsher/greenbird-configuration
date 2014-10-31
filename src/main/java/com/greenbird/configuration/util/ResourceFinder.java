@@ -8,12 +8,16 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 public class ResourceFinder {
     public static final String CONFIG_ROOT_PATH = "classpath*:/gb-conf/**/";
     public static final String CONTEXT_PATTERN = CONFIG_ROOT_PATH + "*-context.xml";
+    public static final String CONTEXT_FILE_PATTERN = "*-context.xml";
     private static final String CONFIGURATION_FILE_TEMPLATE = "*-%s.properties";
     private static final String CONFIGURATION_FILE_PATTERN = CONFIG_ROOT_PATH + CONFIGURATION_FILE_TEMPLATE;
 
@@ -35,6 +39,19 @@ public class ResourceFinder {
         }
         filePatternBuilder.append("**/").append(format(CONFIGURATION_FILE_TEMPLATE, profileName));
         return findResources(filePatternBuilder.toString());
+    }
+    
+    public Set<Resource> findFileSystemContextFiles(Set<File> configDirectories) {
+        Set<Resource> resources = new HashSet<Resource>();
+        for (File configDir : configDirectories) {
+            StringBuilder filePatternBuilder = new StringBuilder(configDir.toURI().toString());
+            if (!filePatternBuilder.toString().endsWith("/")) {
+                filePatternBuilder.append("/");
+            }
+            filePatternBuilder.append("**/").append(format(CONTEXT_FILE_PATTERN));
+            resources.addAll(asList(findResources(filePatternBuilder.toString())));
+        }
+        return resources;
     }
 
     private Resource[] findResources(String locationPattern) {
