@@ -52,7 +52,7 @@ Include the jar as a runtime scope dependency and configure Spring as described 
 ### Quick start
 The main functionality of greenbird-configuration is to automatically load and manage configuration properties and Spring context definitions for your application and your applications dependencies.
 
-1.  Place the relevant files under the `/gb-config` package in your classpath:  
+1.  Place the relevant files under the `/gb-conf` package in your classpath:  
     Files with the `*-<profile>.properties` name pattern (e.g. `myapp-default.properties`) will be loaded as configuration properties.    
     Files with the `*-context.xml` name pattern (e.g. `myapp-context.xml`) will be loaded as Spring context definition files.  
     All other files will be ignored.
@@ -62,9 +62,8 @@ The main functionality of greenbird-configuration is to automatically load and m
     Then activate Spring classpath scanning for the `com.greenbird.configuration` package in your main Spring configuration file:  
 
     ```xml
-        <ctx:component-scan base-package="com.greenbird.configuration"/>
+	    <ctx:component-scan base-package="com.greenbird.configuration, com.optionally.your.package.here"/>
     ```
-
 3.  Start using the imported Spring components and configuration properties in your project:  
     The beans defined in the imported Spring definitions are now available for regular use in your Spring context.
 
@@ -73,9 +72,9 @@ The main functionality of greenbird-configuration is to automatically load and m
 
 ### Details
 
-#### The `gb-config` folder
+#### The `gb-conf` folder
 greenbird-configuration loads configuration properties and Spring context definitions from the classpath.  
-The files needs to be placed under the root folder `gb-config` in your classpath and follow the naming patterns described below.  
+The files needs to be placed under the root folder `gb-conf` in your classpath and follow the naming patterns described below.  
 You can add files to sub-folders if you like. All compliant files will be loaded whether they are in a sub-folder or not.
 Example setup with standard Maven directory layout where all files will be loaded:
 
@@ -89,7 +88,7 @@ src/main/resources/gb-conf/spring/myothermodule-context.xml
 #### Loading configuration properties from the file system
 It is possible to load configuration property files from the file system in addition to the classpath.
 You can configure one or more folders on the file system to be scanned for configuration properties in the same way as 
-the `gb-config` classpath folders are scanned.  
+the `gb-conf` classpath folders are scanned.  
 
 Configuration loaded from the file system always takes precedence over the configuration loaded from the classpath.
 
@@ -256,11 +255,13 @@ For your production code you will normally load greenbird-configuration by activ
 `com.greenbird.configuration` package in your main Spring configuration file:  
                                                                         
 ```xml
-    <ctx:component-scan base-package="com.greenbird.configuration"/>
+    <ctx:component-scan base-package="com.greenbird.configuration, com.optionally.your.package.here"/>
 ```
 
-This is normally the entire content of your main Spring configuration file. Everything else will be automatically loaded by greenbird-configuration.
- 
+This is normally the entire content of your main Spring configuration file. Everything else will be automatically loaded by greenbird-configuration. 	
+
+Note that Spring does not support multiple `component-scan` beans, so consolidate your existing `base-package` attribute into a comma-seperated list, if any. 
+
 If you need you can configure greenbird-configuration to load only some of it's sub-systems instead of all of them.
 This is done through limiting the Spring classpath scanning to selected sub-packages. 
 Here is an overview of the 4 sub-systems and their packages:
@@ -280,6 +281,7 @@ This kind of explicit sub-system loading can be especially useful when testing. 
 In such a scenario you will typically not load the context definitions sub-system but load Spring definition files explicitly in your tests instead.
 
 ## History
+- [1.3.0]: Fixed bugs on beans report, updated documentation.
 - [1.2.0]: Added possibility for 3rd party components to look up configuration as regular Java `Properties`. Fixed bugs where the report was failing on abstract Spring beans and dynamic proxies. Dependency and doc enchantments.
 - [1.1.0]: Added support for loading configuration properties from the file system.
 - [1.0.0]: Initial release.
