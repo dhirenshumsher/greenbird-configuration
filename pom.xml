@@ -130,6 +130,7 @@
             <groupId>com.greenbird</groupId>
             <artifactId>greenbird-test-tools</artifactId>
             <version>${greenbird-test-tools.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
