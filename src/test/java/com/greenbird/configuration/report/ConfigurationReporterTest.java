@@ -2,8 +2,8 @@ package com.greenbird.configuration.report;
 
 import com.greenbird.configuration.ContextLoadingTestBase;
 import com.greenbird.test.logging.TestLogAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -123,7 +123,7 @@ public class ConfigurationReporterTest extends ContextLoadingTestBase {
     public void setApplicationContext_reportSubsystemNotActive_reportIsNotLogged() {
         createContextForConfiguration("test-spring-context-properties-only.xml",
                 "test-spring-context-contexts-only.xml", "test-spring-context-jmx-only.xml");
-        List<LoggingEvent> loggingEvents = testLogAppender.getLoggingEvents();
+        List<LogEvent> loggingEvents = testLogAppender.getEvents();
         assertThat(loggingEvents.size(), is(0));
     }
 
@@ -138,10 +138,10 @@ public class ConfigurationReporterTest extends ContextLoadingTestBase {
     }
 
     private String getNormalizedMessageFromLogEvent() {
-        List<LoggingEvent> loggingEvents = testLogAppender.getLoggingEvents();
+        List<LogEvent> loggingEvents = testLogAppender.getEvents();
         assertThat(loggingEvents.size(), is(1));
-        LoggingEvent loggingEvent = loggingEvents.get(0);
+        LogEvent loggingEvent = loggingEvents.get(0);
         assertThat(loggingEvent.getLevel(), is(Level.INFO));
-        return loggingEvent.getMessage().toString().replace(LS, " ").replaceAll(" +", " ");
+        return loggingEvent.getMessage().getFormattedMessage().replace(LS, " ").replaceAll(" +", " ");
     }
 }

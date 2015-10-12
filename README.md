@@ -37,7 +37,7 @@ Example dependency config:
 <dependency>
     <groupId>com.greenbird</groupId>
     <artifactId>greenbird-configuration</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
@@ -289,6 +289,7 @@ In such a scenario you will typically not load the context definitions sub-syste
 [1.0.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=1&state=closed
 [1.1.0]:               https://github.com/greenbird/greenbird-configuration/issues?milestone=2&state=closed
 [1.2.0]:               https://github.com/greenbird/greenbird-configuration/issues?q=milestone%3Ar1.2.0+is%3Aclosed
+[1.3.0]:               https://github.com/greenbird/greenbird-configuration/issues?q=milestone%3Ar1.3.0+is%3Aclosed
 [Apache 2.0]:          http://www.apache.org/licenses/LICENSE-2.0.html
 [camel-configuration]: https://github.com/greenbird/camel-configuration
 [build-badge]:         https://build.greenbird.com/job/greenbird-configuration/badge/icon
